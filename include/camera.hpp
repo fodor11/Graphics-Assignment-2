@@ -56,16 +56,19 @@ public:
 	void setObstacles(std::map<std::string, std::vector<vec3f>>* obstaclePositions);
 	///starts the timer
 	void startTimer();
+	/// sets aspect ratio
+	void setAspectRatio(float ratio);
 private:
 	/// projection
-	float _fieldOfView;
-	float _nearPlane;
-	float _farPlane;
-	float _viewportAspectRatio;
+	float m_fFieldOfView = 50.0f;
+	float m_fNearPlane = 0.01f;
+	float m_fFarPlane = 2000.f;
+	float m_fViewportAspectRatio = 4.f/3.f;
 	/// shader program
 	tdogl::Program* m_pProgram;
 	/// rotation in the Y axis
-	float m_fRotationAngleRadian = -M_PI_2;
+	//float m_fRotationAngleRadian = -M_PI_2;
+	float m_fRotationAngleRadian = M_PI_2;
 	/// horizon angle in radian
 	float m_fHorizonAngleRadian = 0.0f;
 
@@ -77,7 +80,7 @@ private:
 	float m_fCameraHeight = 1.f;
 	/// camera's direction (vector)
 	float m_fDirectionX = 0.0f,
-		  m_fDirectionZ = -1.0f;
+		  m_fDirectionZ = 0.0f;
 
 	/// previous positions (used in collision detection)
 	float m_fPrevCameraX = 0.0f,

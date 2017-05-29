@@ -151,12 +151,9 @@ void reshape(GLsizei width, GLsizei height)
 {
 	cout << "Window size: " << width << "x" << height << endl;
 	glViewport(0, 0, width, height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(70.0, (GLdouble)width / (GLdouble)height, 0.01, 10000.0);
 	midX = width / 2;
 	midY = height / 2;
-	glMatrixMode(GL_MODELVIEW);
+	camera->setAspectRatio((float) width / (float) height);
 }
 
 void mouseHandler(int button, int state, int x, int y)
@@ -307,13 +304,6 @@ void loadShaders() {
 	shaders.push_back(tdogl::Shader::shaderFromFile(("fragment-shader.txt"), GL_FRAGMENT_SHADER));
 	glProgram = new tdogl::Program(shaders);
 
-	glProgram->use();
-
-	//set the "projection" uniform in the vertex shader, because it's not going to change
-	glm::mat4 projection = glm::perspective(glm::radians(20.0f), (float)midX * 2 / (float)midY * 2, 0.01f, 2000.0f);
-	glProgram->setUniform("projection", projection);
-
-	glProgram->stopUsing();
 	std::cout << "    Done." << endl;
 }
 void loadObjects() {
@@ -322,6 +312,7 @@ void loadObjects() {
 	heightMap = new HeightMapLoader("terrain6_256.png", glProgram);
 	//init cam, sets the current time
 	camera = new Camera(heightMap, glProgram);
+	camera->setAspectRatio(((float)midX * 2) / ((float)midY * 2));
 	//////////////////////////////////////////////////////////////////////////
 	//set up environment
 	//environment = new Environment();

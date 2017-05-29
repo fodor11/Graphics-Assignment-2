@@ -17,29 +17,18 @@ Camera::~Camera(){}
 void Camera::updateCamera()
 {
 	move();
-	m_fCameraY = m_pHeightMap->getHeight(m_fCameraX, m_fCameraZ) + m_fCameraHeight;
+
 	//set the "camera" uniform in the vertex shader
 	m_pProgram->use();
-	glm::mat4 camera = glm::lookAt(glm::vec3(m_fCameraX, m_fCameraY, m_fCameraZ), 
-								   glm::vec3(m_fCameraX + m_fDirectionX, m_fCameraY, m_fCameraZ + m_fDirectionZ),
-								   glm::vec3(0, 1, 0));
 
-	//glm::mat4 camera = glm::rotate(camera, m_fRotationAngleRadian, glm::vec3(0, 1, 0));
-	////change horizon (+change from radius to angle)
-	//camera = glm::rotate(camera, m_fHorizonAngleRadian, glm::vec3(1, 0, 0));
+	glm::mat4 camera = glm::perspective(glm::radians(m_fFieldOfView), m_fViewportAspectRatio, m_fNearPlane, m_fFarPlane);
+	camera = glm::rotate(camera, m_fHorizonAngleRadian, glm::vec3(1, 0, 0));
+	// camera had to be rotated 90 degrees to match the directions of m_fDirectionX and m_fDirectionZ
+	camera = glm::rotate(camera, (float)(m_fRotationAngleRadian + M_PI_2), glm::vec3(0, 1, 0));
+	camera = glm::translate(camera, glm::vec3(-m_fCameraX, -m_fCameraY, -m_fCameraZ));
 
 	m_pProgram->setUniform("camera", camera);
-
 	m_pProgram->stopUsing();
-	///////////////////////////////////////////////////////////////////////////////////////////
-	//set horizon (+change from radius to angle)
-	//glRotatef(radianToAngle(m_fHorizonAngleRadian), 1, 0, 0);
-	//
-	//m_fCameraY = m_pHeightMap->getHeight(m_fCameraX, m_fCameraZ) + m_fCameraHeight;
-	////set the camera
-	//gluLookAt(m_fCameraX, m_fCameraY, m_fCameraZ,                              //camera position
-	//	m_fCameraX + m_fDirectionX, m_fCameraY, m_fCameraZ + m_fDirectionZ,    //look at point
-	//	0.0f, 0.1f, 0.0f);                                                     //up vector
 }
 
 void Camera::setForwardMovement()
@@ -65,12 +54,12 @@ void Camera::setRightMovement()
 void Camera::addRotationInRadian(float addRotationAngle)
 {
 	m_fRotationAngleRadian += addRotationAngle;
-	m_fDirectionX = cos(m_fRotationAngleRadian);
-	m_fDirectionZ = sin(m_fRotationAngleRadian);
 	if (m_fRotationAngleRadian > (M_PI * 2) || m_fRotationAngleRadian < -(M_PI * 2))
 	{
 		m_fRotationAngleRadian = fmodf(m_fRotationAngleRadian, M_PI * 2);
 	}
+	m_fDirectionX = cos(m_fRotationAngleRadian);
+	m_fDirectionZ = sin(m_fRotationAngleRadian);
 }
 
 void Camera::changeHorizonInRadian(float addHorizonAngle)
@@ -123,6 +112,11 @@ void Camera::startTimer()
 #endif
 }
 
+void Camera::setAspectRatio(float ratio)
+{
+	m_fViewportAspectRatio = ratio;
+}
+
 void Camera::move()
 {
 	//float prevTime = m_fElapsedTime;
@@ -131,32 +125,34 @@ void Camera::move()
 	m_fElapsedTime = calcElapsedTime();
 	m_fPrevCameraX = m_fCameraX;
 	m_fPrevCameraZ = m_fCameraZ;
+	float distance = m_fSpeed * m_fElapsedTime;
 
 	if (m_bMoveForward)
 	{
-		m_fCameraX += m_fDirectionX * m_fSpeed * m_fElapsedTime;
-		m_fCameraZ += m_fDirectionZ * m_fSpeed * m_fElapsedTime;
+		m_fCameraX += m_fDirectionX * distance;
+		m_fCameraZ += m_fDirectionZ * distance;
 	}
 	if (m_bMoveBackward)
 	{
-		m_fCameraX -= m_fDirectionX * m_fSpeed * m_fElapsedTime;
-		m_fCameraZ -= m_fDirectionZ * m_fSpeed * m_fElapsedTime;
+		m_fCameraX -= m_fDirectionX * distance;
+		m_fCameraZ -= m_fDirectionZ * distance;
 	}
 	if (m_bMoveRight)
 	{
-		m_fCameraX += cos(m_fRotationAngleRadian + M_PI_2) * m_fSpeed * m_fElapsedTime;
-		m_fCameraZ += sin(m_fRotationAngleRadian + M_PI_2) * m_fSpeed * m_fElapsedTime;
+		m_fCameraX += cos(m_fRotationAngleRadian + M_PI_2) * distance;
+		m_fCameraZ += sin(m_fRotationAngleRadian + M_PI_2) * distance;
 	}
 	if (m_bMoveLeft)
 	{
-		m_fCameraX -= cos(m_fRotationAngleRadian + M_PI_2) * m_fSpeed * m_fElapsedTime;
-		m_fCameraZ -= sin(m_fRotationAngleRadian + M_PI_2) * m_fSpeed * m_fElapsedTime;
+		m_fCameraX -= cos(m_fRotationAngleRadian + M_PI_2) * distance;
+		m_fCameraZ -= sin(m_fRotationAngleRadian + M_PI_2) * distance;
 	}
 	if (checkCollisions())
 	{
 		m_fCameraX = m_fPrevCameraX;
 		m_fCameraZ = m_fPrevCameraZ;
 	}
+	m_fCameraY = m_pHeightMap->getHeight(m_fCameraX, m_fCameraZ) + m_fCameraHeight;
 }
 float Camera::calc2Ddistance(float point1x, float point1y, float point2x, float point2y)
 {
