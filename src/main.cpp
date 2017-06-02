@@ -221,10 +221,10 @@ void keyboard(unsigned char key, int x, int y)
 		camera->setLeftMovement();
 		break;
 	case ' ':
-		setHeight -= speed;
+		camera->setUpwardMovement();
 		break;
 	case 'x':
-		setHeight += speed;
+		camera->setDownwardMovement();
 		break;
 	////////////////////////////////////////////////////
 	//case 43:
@@ -263,6 +263,12 @@ void keyboardUp(unsigned char key, int x, int y)
 		break;
 	case 'a':
 		camera->setLeftMovement();
+		break;
+	case ' ':
+		camera->setUpwardMovement();
+		break;
+	case 'x':
+		camera->setDownwardMovement();
 		break;
 	}
 }

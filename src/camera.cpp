@@ -51,6 +51,16 @@ void Camera::setRightMovement()
 	m_bMoveRight = !m_bMoveRight;
 }
 
+void Camera::setUpwardMovement()
+{
+	m_bMoveUp = !m_bMoveUp;
+}
+
+void Camera::setDownwardMovement()
+{
+	m_bMoveDown = !m_bMoveDown;
+}
+
 void Camera::addRotationInRadian(float addRotationAngle)
 {
 	m_fRotationAngleRadian += addRotationAngle;
@@ -146,6 +156,14 @@ void Camera::move()
 	{
 		m_fCameraX -= cos(m_fRotationAngleRadian + M_PI_2) * distance;
 		m_fCameraZ -= sin(m_fRotationAngleRadian + M_PI_2) * distance;
+	}
+	if (m_bMoveUp)
+	{
+		m_fCameraHeight += distance;
+	}
+	if (m_bMoveDown)
+	{
+		m_fCameraHeight -= distance;
 	}
 	if (checkCollisions())
 	{

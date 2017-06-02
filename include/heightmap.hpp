@@ -38,6 +38,8 @@ private:
 	GLuint m_iTextureID;
 	GLuint m_iTerrainVAO;
 	GLuint m_iTerrainVBO;
+	GLuint m_iIndexVBO;
+	GLuint m_iNumberOfIndicies;
 
 	float m_highestPoint = 0.4f;
 	float m_lowestPoint = 0.4f;

@@ -1,5 +1,6 @@
 #include "../include/texture.hpp"
 #include "../include/heightmap.hpp"
+#include <array>
 #include <iostream>
 #include <gl/glm/gtc/matrix_transform.hpp>
 
@@ -52,63 +53,89 @@ void HeightMapLoader::createVAO()
 	glGenVertexArrays(1, &m_iTerrainVAO);
 	glBindVertexArray(m_iTerrainVAO);
 
-	// create and bind the VBO
-	glGenBuffers(1, &m_iTerrainVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
-
-	
-	// x,y,z + u,v   * 4 vertices per square
-	int vertexCoordsCount = 5 * 4;
-	int verticesDataCount = m_width * m_height * vertexCoordsCount;
-	GLfloat* terrainData = new GLfloat[verticesDataCount];	
+	std::vector<std::array<float, 5>> vertices;
 	for (int i = 0; i < (m_width - 1); i++)
 	{
 		for (int j = 0; j < (m_height - 1); j++)
 		{
-			int actualPosition = i * vertexCoordsCount * m_width + j * vertexCoordsCount;
+			std::array<float, 5> vertex;
 			//vertex
-			terrainData[actualPosition + 0] = i + 1;
-			terrainData[actualPosition + 1] = getHeight(i + 1, j);
-			terrainData[actualPosition + 2] = j;
+			vertex[0] = i + 1;
+			vertex[1] = getHeight(i + 1, j);
+			vertex[2] = j;
 			//txture u,v
-			terrainData[actualPosition + 3] = i;
-			terrainData[actualPosition + 4] = j;
-
+			vertex[3] = i;
+			vertex[4] = j;
+			vertices.push_back(vertex);
+			
 			//vertex
-			terrainData[actualPosition + 5] = i;
-			terrainData[actualPosition + 6] = getHeight(i, j);
-			terrainData[actualPosition + 7] = j;
+			vertex[0] = i;
+			vertex[1] = getHeight(i, j);
+			vertex[2] = j;
 			//txture u,v
-			terrainData[actualPosition + 8] = i;
-			terrainData[actualPosition + 9] = j + 1;
-
+			vertex[3] = i;
+			vertex[4] = j + 1;
+			vertices.push_back(vertex);
+			
 			//vertex
-			terrainData[actualPosition + 10] = i + 1;
-			terrainData[actualPosition + 11] = getHeight(i + 1, j + 1);
-			terrainData[actualPosition + 12] = j + 1;
+			vertex[0] = i + 1;
+			vertex[1] = getHeight(i + 1, j + 1);
+			vertex[2] = j + 1;
 			//txture u,v
-			terrainData[actualPosition + 13] = i + 1;
-			terrainData[actualPosition + 14] = j;
-
+			vertex[3] = i + 1;
+			vertex[4] = j;
+			vertices.push_back(vertex);
+			
 			//vertex
-			terrainData[actualPosition + 15] = i;
-			terrainData[actualPosition + 16] = getHeight(i, j + 1);
-			terrainData[actualPosition + 17] = j + 1;
+			vertex[0] = i;
+			vertex[1] = getHeight(i, j + 1);
+			vertex[2] = j + 1;
 			//txture u,v
-			terrainData[actualPosition + 18] = i + 1;
-			terrainData[actualPosition + 19] = j + 1;
+			vertex[3] = i + 1;
+			vertex[4] = j + 1;
+			vertices.push_back(vertex);
 		}
 	}
-
-	glBufferData(GL_ARRAY_BUFFER, verticesDataCount * sizeof(GLfloat), terrainData, GL_STATIC_DRAW);
+	// create and bind the VBO
+	glGenBuffers(1, &m_iTerrainVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * 5 * sizeof(GLfloat), &vertices.front(), GL_STATIC_DRAW);
 	// connect the xyz to the "vert" attribute of the vertex shader
 	glEnableVertexAttribArray(m_pProgram->attrib("vert"));
 	glVertexAttribPointer(m_pProgram->attrib("vert"), 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), NULL);
 
 	// connect the uv coords to the "vertTexCoord" attribute of the vertex shader
 	glEnableVertexAttribArray(m_pProgram->attrib("vertTexCoord"));
-	glVertexAttribPointer(m_pProgram->attrib("vertTexCoord"), 2, GL_FLOAT, GL_TRUE, 5 * sizeof(GLfloat), (const GLvoid*)(3 * sizeof(GLfloat)));
+	glVertexAttribPointer(m_pProgram->attrib("vertTexCoord"), 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (const GLvoid*)(3 * sizeof(GLfloat)));
+	
+	
+	std::vector<std::array<GLuint, 3>> indices;
+	for (int i = 0; i < (m_width-2); i++)
+	{
+		for (int j = 0; j < (m_height-2); j++)
+		{
+			std::array<GLuint, 3> face;
 
+			// drawing 2 triangles ()
+			int starterValue = (i * (m_height - 2) + j) * 4;			
+			face[0] = starterValue;
+			face[1] = starterValue + 1;
+			face[2] = starterValue + 2;
+			indices.push_back(face);
+			
+			starterValue = starterValue + 2;
+			face[0] = starterValue;
+			face[1] = starterValue - 1;
+			face[2] = starterValue + 1;
+			indices.push_back(face);
+		}
+	}
+	// create the IBO
+	m_iNumberOfIndicies = indices.size() * 3;
+	glGenBuffers(1, &m_iIndexVBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexVBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * 3 * sizeof(GLuint), &indices.front(), GL_STATIC_DRAW);
+	
 	// unbind the VAO
 	glBindVertexArray(0);
 }
@@ -271,13 +298,13 @@ void HeightMapLoader::drawTerrain() const
 	glBindTexture(GL_TEXTURE_2D, m_iTextureID);
 	m_pProgram->setUniform("tex", 0); //set to 0 because the texture is bound to GL_TEXTURE0
 
-	// bind the VAO (the triangle)
+	// bind the VAO 
 	glBindVertexArray(m_iTerrainVAO);
-
-	// draw the VAO
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, (m_width - 1)*(m_height - 1) * 4);
-
-	// unbind the VAO, the program and the texture
+	// draw the IBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexVBO);
+	glDrawElements(GL_TRIANGLES, m_iNumberOfIndicies, GL_UNSIGNED_INT, NULL);
+	// unbind the IBO, VAO, program and the texture
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	m_pProgram->stopUsing();
@@ -328,7 +355,7 @@ float HeightMapLoader::getUnitHeight(float x, float z)
 	}
 	else
 	{
-		return 1.0f;
+		return 0.0f;
 	}
 }
 

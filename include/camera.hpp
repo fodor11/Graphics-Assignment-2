@@ -38,6 +38,10 @@ public:
 	void setLeftMovement();
 	/// sets the m_bMoveRight (to true if false, to false if true)
 	void setRightMovement();
+	/// sets the m_bMoveRight (to true if false, to false if true)
+	void setUpwardMovement();
+	/// sets the m_bMoveRight (to true if false, to false if true)
+	void setDownwardMovement();
 	/// adds the rotation on the XZ plane to the current rotation
 	void addRotationInRadian(float addRotationAngle);
 	/// adds the horizontal angle to the current horizontal angle
@@ -101,7 +105,9 @@ private:
 	bool m_bMoveForward = false,
 		 m_bMoveBackward = false,
 		 m_bMoveLeft = false,
-		 m_bMoveRight = false;
+		 m_bMoveRight = false,
+		 m_bMoveUp = false,
+		 m_bMoveDown = false;
 
 	HeightMapLoader* m_pHeightMap;
 
