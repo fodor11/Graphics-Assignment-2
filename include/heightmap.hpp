@@ -37,7 +37,8 @@ private:
 
 	GLuint m_iTextureID;
 	GLuint m_iTerrainVAO;
-	GLuint m_iTerrainVBO;
+	GLuint m_iVerticesVBO;
+	GLuint m_iTextureCoordsVBO;
 	GLuint m_iIndexVBO;
 	GLuint m_iNumberOfIndicies;
 
