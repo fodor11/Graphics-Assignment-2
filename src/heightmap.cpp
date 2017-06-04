@@ -55,12 +55,15 @@ void HeightMapLoader::createVAO()
 
 	std::vector<std::array<float, 3>> vertices;
 	std::vector<std::array<float, 2>> textureCoords;
+	std::vector<std::array<float, 3>> colors;
+
+	std::array<float, 3> vertex;
+	std::array<float, 2> texture;
+	std::array<float, 3> color;
 	for (int i = 0; i < (m_width - 1); i++)
 	{
 		for (int j = 0; j < (m_height - 1); j++)
 		{
-			std::array<float, 3> vertex;
-			std::array<float, 2> texture;
 			//vertex
 			vertex[0] = i + 1;
 			vertex[1] = getHeight(i + 1, j);
@@ -68,8 +71,11 @@ void HeightMapLoader::createVAO()
 			//txture u,v
 			texture[0] = i;
 			texture[1] = j;
+			//color 
+			color = getColor(i + 1, j);
 			vertices.push_back(vertex);
 			textureCoords.push_back(texture);
+			colors.push_back(color);
 			
 			//vertex
 			vertex[0] = i;
@@ -78,6 +84,9 @@ void HeightMapLoader::createVAO()
 			//txture u,v
 			texture[0] = i;
 			texture[1] = j + 1;
+			//color 
+			color = getColor(i, j);
+			colors.push_back(color);
 			vertices.push_back(vertex);
 			textureCoords.push_back(texture);
 			
@@ -88,6 +97,9 @@ void HeightMapLoader::createVAO()
 			//txture u,v
 			texture[0] = i + 1;
 			texture[1] = j;
+			//color 
+			color = getColor(i + 1, j + 1);
+			colors.push_back(color);
 			vertices.push_back(vertex);
 			textureCoords.push_back(texture);
 			
@@ -98,26 +110,39 @@ void HeightMapLoader::createVAO()
 			//txture u,v
 			texture[0] = i + 1;
 			texture[1] = j + 1;
+			//color 
+			color = getColor(i, j + 1);
+			colors.push_back(color);
 			vertices.push_back(vertex);
 			textureCoords.push_back(texture);
 		}
 	}
 	// create and bind the VBO for vertices
-	glGenBuffers(1, &m_iVerticesVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_iVerticesVBO);
+	glGenBuffers(1, &m_iTerrainVBO);
+	m_vVBOs.push_back(m_iTerrainVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * 3 * sizeof(GLfloat), &vertices.front(), GL_STATIC_DRAW);
 	// connect the xyz to the "vert" attribute of the vertex shader
 	glEnableVertexAttribArray(m_pProgram->attrib("vert"));
 	glVertexAttribPointer(m_pProgram->attrib("vert"), 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
 
 	// create and bind the VBO for texture coordinates
-	glGenBuffers(1, &m_iTextureCoordsVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_iTextureCoordsVBO);
+	glGenBuffers(1, &m_iTerrainVBO);
+	m_vVBOs.push_back(m_iTerrainVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
 	glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * 2 * sizeof(GLfloat), &textureCoords.front(), GL_STATIC_DRAW);
 	// connect the uv coords to the "vertTexCoord" attribute of the vertex shader
 	glEnableVertexAttribArray(m_pProgram->attrib("vertTexCoord"));
 	glVertexAttribPointer(m_pProgram->attrib("vertTexCoord"), 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), NULL);
 	
+	// create and bind the VBO for colors
+	glGenBuffers(1, &m_iTerrainVBO);
+	m_vVBOs.push_back(m_iTerrainVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
+	glBufferData(GL_ARRAY_BUFFER, colors.size() * 3 * sizeof(GLfloat), &colors.front(), GL_STATIC_DRAW);
+	// connect the rgb to the "vertColor" attribute of the vertex shader
+	glEnableVertexAttribArray(m_pProgram->attrib("vertColor"));
+	glVertexAttribPointer(m_pProgram->attrib("vertColor"), 3, GL_FLOAT, GL_TRUE, 3 * sizeof(GLfloat), NULL);
 	
 	std::vector<std::array<GLuint, 3>> indices;
 	std::array<GLuint, 3> face;
@@ -385,9 +410,15 @@ vec3f HeightMapLoader::getNormal(int x, int z) const
 	}
 }
 
-vec3f HeightMapLoader::getColor(int x, int z) const
+std::array<float,3> HeightMapLoader::getColor(int x, int z) const
 {
-	return m_pColors[z*m_width + x];
+	vec3f tmpColor = m_pColors[z*m_width + x];
+	std::array<float, 3> retColor;
+	for (int i = 0; i < 3; i++)
+	{
+		retColor[i] = tmpColor[i];
+	}
+	return retColor;
 }
 
 float HeightMapLoader::getScale() const

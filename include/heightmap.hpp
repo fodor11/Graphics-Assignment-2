@@ -37,8 +37,8 @@ private:
 
 	GLuint m_iTextureID;
 	GLuint m_iTerrainVAO;
-	GLuint m_iVerticesVBO;
-	GLuint m_iTextureCoordsVBO;
+	std::vector<GLuint> m_vVBOs;
+	GLuint m_iTerrainVBO;
 	GLuint m_iIndexVBO;
 	GLuint m_iNumberOfIndicies;
 
@@ -60,7 +60,7 @@ private:
 	void getHeightValues();
 	void calcVertexNormals();
 	vec3f getNormal(int x, int z) const;
-	vec3f getColor(int x, int z) const;
+	std::array<float, 3> getColor(int x, int z) const;
 	void determineColors();
 	void createVAO();
 	float linearInterpolation(float pointA, float pointB, float weightB);
