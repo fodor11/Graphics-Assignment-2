@@ -17,6 +17,7 @@
  */
 
 #include "Program.h"
+#include <iostream>
 #include <stdexcept>
 #include <gl/glm/gtc/type_ptr.hpp>
 
@@ -92,7 +93,10 @@ GLint Program::attrib(const GLchar* attribName) const {
     
     GLint attrib = glGetAttribLocation(_object, attribName);
     if(attrib == -1)
+	{
+		std::cout << "Program attribute not found: " << attribName << std::endl;
         throw std::runtime_error(std::string("Program attribute not found: ") + attribName);
+	}
     
     return attrib;
 }

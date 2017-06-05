@@ -391,6 +391,8 @@ int main(int argc, char* argv[])
 	glutWarpPointer(midX, midY);
 	initialize();
 
+	std::cout << "Rendering... " << std::endl;
+	
 	//callbacks
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);

@@ -53,96 +53,131 @@ void HeightMapLoader::createVAO()
 	glGenVertexArrays(1, &m_iTerrainVAO);
 	glBindVertexArray(m_iTerrainVAO);
 
-	std::vector<std::array<float, 3>> vertices;
-	std::vector<std::array<float, 2>> textureCoords;
-	std::vector<std::array<float, 3>> colors;
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> textureCoords;
+	std::vector<glm::vec3> normals;
+	std::vector<glm::vec3> diffuseColors;
+	std::vector<glm::vec3> ambientColors;
+	std::vector<glm::vec3> specularColors;
 
-	std::array<float, 3> vertex;
-	std::array<float, 2> texture;
-	std::array<float, 3> color;
+	glm::vec3 vertex;
+	glm::vec2 texture;
+	glm::vec3 normal;
+	glm::vec3 color;
+	glm::vec3 specularColor = glm::vec3(0.f, 0.f, 0.f);
+
 	for (int i = 0; i < (m_width - 1); i++)
 	{
 		for (int j = 0; j < (m_height - 1); j++)
 		{
 			//vertex
-			vertex[0] = i + 1;
-			vertex[1] = getHeight(i + 1, j);
-			vertex[2] = j;
+			vertex = glm::vec3(i + 1, getHeight(i + 1, j), j);
 			//txture u,v
-			texture[0] = i;
-			texture[1] = j;
+			texture = glm::vec2(i, j);
 			//color 
 			color = getColor(i + 1, j);
+			diffuseColors.push_back(color);
+			color = color * 0.1f;
+			ambientColors.push_back(color);
+			specularColors.push_back(specularColor);
+			//normal
+			normal = getNormal(i + 1, j);
+
 			vertices.push_back(vertex);
 			textureCoords.push_back(texture);
-			colors.push_back(color);
+			normals.push_back(normal);
+
 			
 			//vertex
-			vertex[0] = i;
-			vertex[1] = getHeight(i, j);
-			vertex[2] = j;
+			vertex = glm::vec3(i, getHeight(i, j), j);
 			//txture u,v
-			texture[0] = i;
-			texture[1] = j + 1;
+			texture = glm::vec2(i, j + 1);
 			//color 
 			color = getColor(i, j);
-			colors.push_back(color);
+			diffuseColors.push_back(color);
+			color = color * 0.1f;
+			ambientColors.push_back(color);
+			specularColors.push_back(specularColor);
+			//normal
+			normal = getNormal(i, j);
+
 			vertices.push_back(vertex);
 			textureCoords.push_back(texture);
+			normals.push_back(normal);
+
 			
 			//vertex
-			vertex[0] = i + 1;
-			vertex[1] = getHeight(i + 1, j + 1);
-			vertex[2] = j + 1;
+			vertex = glm::vec3(i + 1, getHeight(i + 1, j + 1), j + 1);
 			//txture u,v
-			texture[0] = i + 1;
-			texture[1] = j;
+			texture = glm::vec2(i + 1, j);
 			//color 
 			color = getColor(i + 1, j + 1);
-			colors.push_back(color);
+			diffuseColors.push_back(color);
+			color = color * 0.1f;
+			ambientColors.push_back(color);
+			specularColors.push_back(specularColor);
+			//normal
+			normal = getNormal(i + 1, j + 1);
+
 			vertices.push_back(vertex);
 			textureCoords.push_back(texture);
+			normals.push_back(normal);
+
 			
 			//vertex
-			vertex[0] = i;
-			vertex[1] = getHeight(i, j + 1);
-			vertex[2] = j + 1;
+			vertex = glm::vec3(i, getHeight(i, j + 1), j + 1);
 			//txture u,v
-			texture[0] = i + 1;
-			texture[1] = j + 1;
+			texture = glm::vec2(i + 1, j + 1);
 			//color 
 			color = getColor(i, j + 1);
-			colors.push_back(color);
+			diffuseColors.push_back(color);
+			color = color * 0.1f;
+			ambientColors.push_back(color);
+			specularColors.push_back(specularColor);
+			//normal
+			normal = getNormal(i, j + 1);
+
 			vertices.push_back(vertex);
 			textureCoords.push_back(texture);
+			normals.push_back(normal);
 		}
 	}
 	// create and bind the VBO for vertices
 	glGenBuffers(1, &m_iTerrainVBO);
 	m_vVBOs.push_back(m_iTerrainVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * 3 * sizeof(GLfloat), &vertices.front(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices.front(), GL_STATIC_DRAW);
 	// connect the xyz to the "vert" attribute of the vertex shader
 	glEnableVertexAttribArray(m_pProgram->attrib("vert"));
-	glVertexAttribPointer(m_pProgram->attrib("vert"), 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
+	glVertexAttribPointer(m_pProgram->attrib("vert"), 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	// create and bind the VBO for texture coordinates
 	glGenBuffers(1, &m_iTerrainVBO);
 	m_vVBOs.push_back(m_iTerrainVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
-	glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * 2 * sizeof(GLfloat), &textureCoords.front(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(glm::vec2), &textureCoords.front(), GL_STATIC_DRAW);
 	// connect the uv coords to the "vertTexCoord" attribute of the vertex shader
 	glEnableVertexAttribArray(m_pProgram->attrib("vertTexCoord"));
-	glVertexAttribPointer(m_pProgram->attrib("vertTexCoord"), 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), NULL);
+	glVertexAttribPointer(m_pProgram->attrib("vertTexCoord"), 2, GL_FLOAT, GL_FALSE, 0, NULL);
 	
-	// create and bind the VBO for colors
+	// create and bind the VBO for diffuseColors
 	glGenBuffers(1, &m_iTerrainVBO);
 	m_vVBOs.push_back(m_iTerrainVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
-	glBufferData(GL_ARRAY_BUFFER, colors.size() * 3 * sizeof(GLfloat), &colors.front(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, diffuseColors.size() *  sizeof(glm::vec3), &diffuseColors.front(), GL_STATIC_DRAW);
 	// connect the rgb to the "vertColor" attribute of the vertex shader
 	glEnableVertexAttribArray(m_pProgram->attrib("vertColor"));
-	glVertexAttribPointer(m_pProgram->attrib("vertColor"), 3, GL_FLOAT, GL_TRUE, 3 * sizeof(GLfloat), NULL);
+	glVertexAttribPointer(m_pProgram->attrib("vertColor"), 3, GL_FLOAT, GL_TRUE, 0, NULL);
+
+	// create and bind the VBO for normals
+	glGenBuffers(1, &m_iTerrainVBO);
+	m_vVBOs.push_back(m_iTerrainVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals.front(), GL_STATIC_DRAW);
+	// connect the normal to the "vertNorm" attribute of the vertex shader
+	glEnableVertexAttribArray(m_pProgram->attrib("vertNorm"));
+	std::cout << "here" << std::endl;
+	glVertexAttribPointer(m_pProgram->attrib("vertNorm"), 3, GL_FLOAT, GL_TRUE, 0, NULL);
 	
 	std::vector<std::array<GLuint, 3>> indices;
 	std::array<GLuint, 3> face;
@@ -398,26 +433,26 @@ float HeightMapLoader::getHeight(float x, float z)
 	return getUnitHeight(x, z) * m_maxHeight;
 }
 
-vec3f HeightMapLoader::getNormal(int x, int z) const
+glm::vec3 HeightMapLoader::getNormal(int x, int z) const
 {
+	glm::vec3 retNormal = glm::vec3(0.f, 0.f, 0.f);
 	if (x < m_width && z < m_height && x >= 0 && z >= 0)
 	{
-		return m_pVertexNormals[x*m_width + z];
+		vec3f tmpNorm = m_pVertexNormals[x*m_width + z];
+		retNormal = glm::vec3(tmpNorm.x(), tmpNorm.y(), tmpNorm.z());
 	}
-	else
-	{
-		return vec3f(0, 1, 0);
-	}
+	return retNormal;
 }
 
-std::array<float,3> HeightMapLoader::getColor(int x, int z) const
+glm::vec3 HeightMapLoader::getColor(int x, int z) const
 {
 	vec3f tmpColor = m_pColors[z*m_width + x];
-	std::array<float, 3> retColor;
-	for (int i = 0; i < 3; i++)
-	{
-		retColor[i] = tmpColor[i];
-	}
+	glm::vec3 retColor(tmpColor.x(), tmpColor.y(), tmpColor.z());
+	//std::array<float, 3> retColor;
+	//for (int i = 0; i < 3; i++)
+	//{
+	//	retColor[i] = tmpColor[i];
+	//}
 	return retColor;
 }
 

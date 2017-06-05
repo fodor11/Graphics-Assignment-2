@@ -59,8 +59,8 @@ private:
 	void getMoistValues();
 	void getHeightValues();
 	void calcVertexNormals();
-	vec3f getNormal(int x, int z) const;
-	std::array<float, 3> getColor(int x, int z) const;
+	glm::vec3 getNormal(int x, int z) const;
+	glm::vec3 getColor(int x, int z) const;
 	void determineColors();
 	void createVAO();
 	float linearInterpolation(float pointA, float pointB, float weightB);
