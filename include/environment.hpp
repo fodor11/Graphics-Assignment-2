@@ -5,6 +5,8 @@
 #include "camera.hpp"
 #include "dynamicFog.hpp"
 #include "rain.hpp"
+#include "light.hpp"
+#include "../src/tdogl/Program.h"
 
 class Environment
 {
@@ -14,7 +16,7 @@ public:
 	/// empty
 	~Environment();
 	/// reads and prepares objects and textures (sky, forest, trees, terrain)
-	void initialize(HeightMapLoader* heightMap, Camera* camera);
+	void initialize(HeightMapLoader* heightMap, Camera* camera, tdogl::Program* shaderProgram);
 	/// draws everything
 	void update();
 	/// adds the value to the overall lightness
@@ -27,6 +29,8 @@ private:
 	DynamicFog *m_pFog;
 	Rain *m_pRain;
 	Sky *m_pSky;
+	tdogl::Program *m_pProgram;
+
 	Tree *m_pTree1;
 	std::string m_sTree1FileName = "pine1";
 	Tree *m_pTree2;
@@ -39,7 +43,7 @@ private:
 	float m_fVisualRange = 6.5f;
 
 	float m_fOverallLightness = 0.1;
-	GLfloat m_faLightModelAmbient[4] = { m_fOverallLightness, m_fOverallLightness, m_fOverallLightness, 1.0 };
+	glm::vec3 m_vLightModelAmbient = glm::vec3( m_fOverallLightness, m_fOverallLightness, m_fOverallLightness);
 
 	/// pointers to foreign objects
 	HeightMapLoader* m_pHeightmap;

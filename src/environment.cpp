@@ -15,33 +15,30 @@ Environment::~Environment()
 	delete m_pSky;
 }
 
-void Environment::initialize(HeightMapLoader* heightMap, Camera* camera)
+void Environment::initialize(HeightMapLoader* heightMap, Camera* camera, tdogl::Program* shaderProgram)
 {
 	m_pCamera = camera;
 	m_pHeightmap = heightMap;
+	m_pProgram = shaderProgram;
+	//m_pFog = new DynamicFog(camera);
+	//m_pRain = new Rain(camera, heightMap);
 
-	m_pFog = new DynamicFog(camera);
-	m_pRain = new Rain(camera, heightMap);
+	//m_pSky = new Sky();
+	//m_pSky->initialize();
 
-	m_pSky = new Sky();
-	m_pSky->initialize();
+	//m_pForest = new Forest(m_sForestFileName);
+	//m_pForest->initialize(m_pHeightmap);
 
-	m_pForest = new Forest(m_sForestFileName);
-	m_pForest->initialize(m_pHeightmap);
+	//m_pCamera->setObstacles(m_pForest->getPositionsMap());
 
-	m_pCamera->setObstacles(m_pForest->getPositionsMap());
-
-	m_pTree1 = new Tree(m_sTree1FileName);
-	m_pTree2 = new Tree(m_sTree2FileName);
-	m_pTree3 = new Tree(m_sTree3FileName);
-
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, m_faLightModelAmbient);
-
+	//m_pTree1 = new Tree(m_sTree1FileName);
+	//m_pTree2 = new Tree(m_sTree2FileName);
+	//m_pTree3 = new Tree(m_sTree3FileName);
 }
 
 void Environment::update()
 {
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, m_faLightModelAmbient);
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, m_vLightModelAmbient);
 
 	m_pFog->updateFog();
 
@@ -78,9 +75,9 @@ void Environment::changeAmbientLight(float value)
 	{
 		m_fOverallLightness = 0.0f;
 	}
-	m_faLightModelAmbient[0] = m_fOverallLightness;
-	m_faLightModelAmbient[1] = m_fOverallLightness;
-	m_faLightModelAmbient[2] = m_fOverallLightness;
+	m_vLightModelAmbient[0] = m_fOverallLightness;
+	m_vLightModelAmbient[1] = m_fOverallLightness;
+	m_vLightModelAmbient[2] = m_fOverallLightness;
 }
 
 void Environment::toggleMoonlight()

@@ -202,6 +202,7 @@ void HeightMapLoader::createVAO()
 	// create the IBO
 	m_iNumberOfIndicies = indices.size() * 3;
 	glGenBuffers(1, &m_iIndexVBO);
+	m_vVBOs.push_back(m_iIndexVBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexVBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * 3 * sizeof(GLuint), &indices.front(), GL_STATIC_DRAW);
 	
@@ -385,6 +386,7 @@ HeightMapLoader::~HeightMapLoader()
 	delete  m_pHeightValues;
 	delete m_pMoisture;
 	delete[] m_pColors;
+	glDeleteBuffers(m_vVBOs.size(), &m_vVBOs.front());
 	std::cout << "heightmap destroyed" << std::endl;
 }
 
