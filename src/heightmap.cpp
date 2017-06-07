@@ -64,7 +64,7 @@ void HeightMapLoader::createVAO()
 	glm::vec2 texture;
 	glm::vec3 normal;
 	glm::vec3 color;
-	glm::vec3 specularColor = glm::vec3(0.f, 0.f, 0.f);
+	glm::vec3 specularColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	for (int i = 0; i < (m_width - 1); i++)
 	{
@@ -160,14 +160,32 @@ void HeightMapLoader::createVAO()
 	glEnableVertexAttribArray(m_pProgram->attrib("vertTexCoord"));
 	glVertexAttribPointer(m_pProgram->attrib("vertTexCoord"), 2, GL_FLOAT, GL_FALSE, 0, NULL);
 	
+	// create and bind the VBO for ambientColors
+	glGenBuffers(1, &m_iTerrainVBO);
+	m_vVBOs.push_back(m_iTerrainVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
+	glBufferData(GL_ARRAY_BUFFER, ambientColors.size() *  sizeof(glm::vec3), &ambientColors.front(), GL_STATIC_DRAW);
+	// connect the rgb to the "vertAmbientColor" attribute of the vertex shader
+	glEnableVertexAttribArray(m_pProgram->attrib("vertAmbientColor"));
+	glVertexAttribPointer(m_pProgram->attrib("vertAmbientColor"), 3, GL_FLOAT, GL_TRUE, 0, NULL);
+
 	// create and bind the VBO for diffuseColors
 	glGenBuffers(1, &m_iTerrainVBO);
 	m_vVBOs.push_back(m_iTerrainVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
 	glBufferData(GL_ARRAY_BUFFER, diffuseColors.size() *  sizeof(glm::vec3), &diffuseColors.front(), GL_STATIC_DRAW);
-	// connect the rgb to the "vertColor" attribute of the vertex shader
-	glEnableVertexAttribArray(m_pProgram->attrib("vertColor"));
-	glVertexAttribPointer(m_pProgram->attrib("vertColor"), 3, GL_FLOAT, GL_TRUE, 0, NULL);
+	// connect the rgb to the "vertDiffuseColor" attribute of the vertex shader
+	glEnableVertexAttribArray(m_pProgram->attrib("vertDiffuseColor"));
+	glVertexAttribPointer(m_pProgram->attrib("vertDiffuseColor"), 3, GL_FLOAT, GL_TRUE, 0, NULL);
+
+	// create and bind the VBO for specularColors
+	glGenBuffers(1, &m_iTerrainVBO);
+	m_vVBOs.push_back(m_iTerrainVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
+	glBufferData(GL_ARRAY_BUFFER, specularColors.size() *  sizeof(glm::vec3), &specularColors.front(), GL_STATIC_DRAW);
+	// connect the rgb to the "vertSpecularColor" attribute of the vertex shader
+	glEnableVertexAttribArray(m_pProgram->attrib("vertSpecularColor"));
+	glVertexAttribPointer(m_pProgram->attrib("vertSpecularColor"), 3, GL_FLOAT, GL_TRUE, 0, NULL);
 
 	// create and bind the VBO for normals
 	glGenBuffers(1, &m_iTerrainVBO);
@@ -361,7 +379,10 @@ void HeightMapLoader::drawTerrain() const
 	m_pProgram->use();
 
 	// set the "model" uniform in the vertex shader
-	m_pProgram->setUniform("model", glm::mat4());
+	m_pProgram->setUniform("model", m_mModel);
+
+	// set the "normalMatrix" uniform in the vertex shader
+	m_pProgram->setUniform("normalMatrix", glm::mat3(glm::transpose(glm::inverse(m_mModel))));
 
 	// bind the texture and set the "tex" uniform in the fragment shader
 	glActiveTexture(GL_TEXTURE0);

@@ -28,6 +28,7 @@ void Camera::updateCamera()
 	camera = glm::translate(camera, glm::vec3(-m_fCameraX, -m_fCameraY, -m_fCameraZ));
 
 	m_pProgram->setUniform("camera", camera);
+	m_pProgram->setUniform("viewPosition", glm::vec3(m_fCameraX, m_fCameraY, m_fCameraZ));
 	m_pProgram->stopUsing();
 }
 

@@ -29,6 +29,7 @@ public:
 
 private:
 	tdogl::Program* m_pProgram;
+	glm::mat4 m_mModel = glm::mat4();
 	unsigned char* m_pImage;
 	std::string m_fileName;
 	int m_height;

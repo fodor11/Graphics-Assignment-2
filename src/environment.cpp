@@ -23,8 +23,8 @@ void Environment::initialize(HeightMapLoader* heightMap, Camera* camera, tdogl::
 	//m_pFog = new DynamicFog(camera);
 	//m_pRain = new Rain(camera, heightMap);
 
-	//m_pSky = new Sky();
-	//m_pSky->initialize();
+	m_pSky = new Sky();
+	m_pSky->initialize();
 
 	//m_pForest = new Forest(m_sForestFileName);
 	//m_pForest->initialize(m_pHeightmap);
