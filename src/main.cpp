@@ -129,7 +129,7 @@ void display()
 	heightMap->drawTerrain();
 
 	/////////////////////////////////////////////////
-	//environment->update();
+	environment->update();
 	/////////////////////////////////////////////////
 
 	printFps();
@@ -304,13 +304,13 @@ std::string resourcePath(std::string fileName)
 		throw std::runtime_error("GetModuleFileName failed a bit");
 }
 void loadShaders() {
-	std::cout << "Loading shaders ...";
+	std::cout << "Loading shaders ..." << std::endl;
 	std::vector<tdogl::Shader> shaders;
 	shaders.push_back(tdogl::Shader::shaderFromFile(("vertex-shader.txt"), GL_VERTEX_SHADER));
 	shaders.push_back(tdogl::Shader::shaderFromFile(("fragment-shader.txt"), GL_FRAGMENT_SHADER));
 	glProgram = new tdogl::Program(shaders);
 
-	std::cout << "    Done." << endl;
+	std::cout << "Done." << endl;
 }
 void loadObjects() {
 	std::cout << "Load objects... " << std::endl;
@@ -321,8 +321,8 @@ void loadObjects() {
 	camera->setAspectRatio(((float)midX * 2) / ((float)midY * 2));
 	//////////////////////////////////////////////////////////////////////////
 	//set up environment
-	//environment = new Environment();
-	//environment->initialize(heightMap, camera);
+	environment = new Environment();
+	environment->initialize(heightMap, camera, glProgram);
 	//////////////////////////////////////////////////////////////////////////
 }
 void initialize()

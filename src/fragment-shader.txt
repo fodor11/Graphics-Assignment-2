@@ -5,7 +5,8 @@ uniform mat3 normalMatrix;
 uniform vec3 viewPosition;
 uniform sampler2D tex;
 
-uniform struct Light {
+uniform struct Light
+{
 	vec3 position;
 	vec3 ambientIntensities;
 	vec3 diffuseIntensities;
@@ -23,10 +24,10 @@ out vec4 finalColor;
 
 void main() {
 	// transform back the normal into world coordinates
-	vec3 normal = nomralize(fragNormal * normalMatrix);
+	vec3 normal = normalize(fragNormal * normalMatrix);
 	
 	// calculate the location of this fragment (pixel) in world coordinates
-	vec3 fragPosition = vec3(model * vec4(fragVert, 1));
+	vec3 fragPosition = vec3(model * vec4(fragVert, 1.0));
 
 	// vector from the surface to the light
 	vec3 surfaceToLight = normalize(light.position - fragPosition);
@@ -47,5 +48,5 @@ void main() {
 	float specular = pow(max(dot(viewDirection, reflectDirection), 0.0), 32);
 	vec3 specularColor = fragSpecularColor * specular * light.specularIntensities;
     
-	finalColor = vec4(ambientColor + diffuseColor + specularColor) * textureColor.rgb, textureColor.a);
+	finalColor = vec4((ambientColor + diffuseColor + specularColor) * textureColor.rgb, textureColor.a);
 }

@@ -1,3 +1,4 @@
+#pragma once
 #include "../src/tdogl/Program.h"
 #include <gl/glm/glm.hpp>
 

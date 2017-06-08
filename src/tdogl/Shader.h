@@ -67,7 +67,7 @@ namespace tdogl {
     private:
         GLuint _object;
         unsigned* _refCount;
-        
+
         void _retain();
         void _release();
     };

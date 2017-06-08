@@ -45,7 +45,6 @@ private:
 	float m_fOverallLightness = 0.1;
 	glm::vec3 m_vLightModelAmbient = glm::vec3( m_fOverallLightness, m_fOverallLightness, m_fOverallLightness);
 
-	/// pointers to foreign objects
 	HeightMapLoader* m_pHeightmap;
 	Camera* m_pCamera;
 

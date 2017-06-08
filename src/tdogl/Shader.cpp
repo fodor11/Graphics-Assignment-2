@@ -32,8 +32,8 @@ Shader::Shader(const std::string& shaderCode, GLenum shaderType) :
 {
     //create the shader object
     _object = glCreateShader(shaderType);
-    if(_object == 0)
-        throw std::runtime_error("glCreateShader failed");
+	if (_object == 0)
+		std::cout << "glCreateShader failed" << std::endl;
     
     //set the source code
     const char* code = shaderCode.c_str();
@@ -46,7 +46,7 @@ Shader::Shader(const std::string& shaderCode, GLenum shaderType) :
     GLint status;
     glGetShaderiv(_object, GL_COMPILE_STATUS, &status);
     if (status == GL_FALSE) {
-        std::string msg("Compile failure in shader:\n");
+        std::string msg("\nCompile failure in shader:\n");
         
         GLint infoLogLength;
         glGetShaderiv(_object, GL_INFO_LOG_LENGTH, &infoLogLength);
@@ -56,6 +56,7 @@ Shader::Shader(const std::string& shaderCode, GLenum shaderType) :
         delete[] strInfoLog;
         
         glDeleteShader(_object); _object = 0;
+		std::cout << msg << std::endl;
         throw std::runtime_error(msg);
     }
     
@@ -88,11 +89,12 @@ Shader& Shader::operator = (const Shader& other) {
 }
 
 Shader Shader::shaderFromFile(const std::string& filePath, GLenum shaderType) {
+	std::cout << "Loading " << filePath.c_str() << std::endl;
     //open file
     std::ifstream f;
     f.open(filePath.c_str(), std::ios::in | std::ios::binary);
     if(!f.is_open()){
-        throw std::runtime_error(std::string("Failed to open file: ") + filePath);
+        std::cout << "Failed to open file: " << filePath << std::endl;
     }
 
     //read whole file into stringstream buffer

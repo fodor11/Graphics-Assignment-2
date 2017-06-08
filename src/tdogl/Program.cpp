@@ -26,13 +26,13 @@ using namespace tdogl;
 Program::Program(const std::vector<Shader>& shaders) :
     _object(0)
 {
-    if(shaders.size() <= 0)
-        throw std::runtime_error("No shaders were provided to create the program");
+	if (shaders.size() <= 0)
+		std::cout << "No shaders were provided to create the program" << std::endl;
     
     //create the program object
     _object = glCreateProgram();
     if(_object == 0)
-        throw std::runtime_error("glCreateProgram failed");
+		std::cout << "glCreateProgram failed" << std::endl;
     
     //attach all the shaders
     for(unsigned i = 0; i < shaders.size(); ++i)
