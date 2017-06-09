@@ -194,7 +194,6 @@ void HeightMapLoader::createVAO()
 	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals.front(), GL_STATIC_DRAW);
 	// connect the normal to the "vertNorm" attribute of the vertex shader
 	glEnableVertexAttribArray(m_pProgram->attrib("vertNorm"));
-	std::cout << "here" << std::endl;
 	glVertexAttribPointer(m_pProgram->attrib("vertNorm"), 3, GL_FLOAT, GL_TRUE, 0, NULL);
 	
 	std::vector<std::array<GLuint, 3>> indices;
@@ -222,7 +221,7 @@ void HeightMapLoader::createVAO()
 	glGenBuffers(1, &m_iIndexVBO);
 	m_vVBOs.push_back(m_iIndexVBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexVBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * 3 * sizeof(GLuint), &indices.front(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_iNumberOfIndicies * sizeof(GLuint), &indices.front(), GL_STATIC_DRAW);
 	
 	// unbind the VAO
 	glBindVertexArray(0);

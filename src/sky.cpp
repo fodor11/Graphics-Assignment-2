@@ -31,7 +31,7 @@ void Sky::initialize(tdogl::Program *shaderProgram)
 
 void Sky::updateSky(float cameraX, float cameraY, float cameraZ, float elapsedTime)
 {
-	moveMoon(elapsedTime);
+	//moveMoon(elapsedTime);
 	//drawMoon();
 	//glTranslatef(cameraX, cameraY, cameraZ);
 	//drawSky();

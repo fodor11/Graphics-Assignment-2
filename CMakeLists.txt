@@ -25,6 +25,7 @@ set(SOURCES 	src/main.cpp
 		src/rain.cpp
 		src/dynamicFog.cpp
 		src/light.cpp
+		src/sphere.cpp
 		src/tdogl/Program.cpp
 		src/tdogl/Program.h
 		src/tdogl/Shader.cpp
@@ -43,6 +44,7 @@ set(SOURCES 	src/main.cpp
 		include/environment.hpp
 		include/rain.hpp
 		include/light.hpp
+		include/sphere.hpp
 		)
 
 add_executable(House_in_the_Forest ${SOURCES})
