@@ -88,8 +88,11 @@ void Program::stopUsing() const {
 }
 
 GLint Program::attrib(const GLchar* attribName) const {
-    if(!attribName)
-        throw std::runtime_error("attribName was NULL");
+	if (!attribName)
+	{
+		std::cout << "attribName was NULL" << std::endl;
+		throw std::runtime_error("attribName was NULL");
+	}
     
     GLint attrib = glGetAttribLocation(_object, attribName);
     if(attrib == -1)

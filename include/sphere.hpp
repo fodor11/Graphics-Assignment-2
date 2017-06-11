@@ -7,7 +7,7 @@
 class Sphere {
 public:
 	/// initializes members and creates the vectors
-	Sphere(float radius, unsigned int longitude, unsigned int latitude);
+	Sphere(float radius, unsigned int longitude, unsigned int latitude, bool normalDirectsOutwards);
 	/// does nothing
 	~Sphere();
 	/// returns the vector of vertices
@@ -22,6 +22,7 @@ private:
 	float m_fRadius;
 	unsigned int m_iLongitude;
 	unsigned int m_iLatitude;
+	bool m_bNormalDirectsOutwards;
 
 	std::vector<glm::vec3> m_vVertices;
 	std::vector<glm::vec2> m_vTextureCoords;

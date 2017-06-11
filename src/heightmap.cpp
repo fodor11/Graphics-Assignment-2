@@ -29,7 +29,9 @@ void HeightMapLoader::getHeightValues()
 void HeightMapLoader::determineColors()
 {
 	float lightness = 1.f;
+	float maxShininess = 64;
 	m_pColors = new vec3f[m_width * m_height];
+	m_pShininess = new float[m_width * m_height];
 
 	TextureLoader *biome = new TextureLoader();
 	biome->loadImage("biome-smooth.png");
@@ -38,7 +40,8 @@ void HeightMapLoader::determineColors()
 	{
 		float realtiveHeight = (m_pHeightValues[i] - m_lowestPoint) / (m_highestPoint - m_lowestPoint);
 		float relativeMoisture = (m_pMoisture[i] - m_dryestPoint) / (m_wettestPoint - m_dryestPoint);
-		m_pColors[i] = biome->getMoistureColor(relativeMoisture, realtiveHeight)*lightness;
+		m_pColors[i] = biome->getMoistureColor(relativeMoisture, realtiveHeight) * lightness;
+		m_pShininess[i] = realtiveHeight * relativeMoisture * maxShininess;
 	}
 }
 
@@ -59,6 +62,7 @@ void HeightMapLoader::createVAO()
 	std::vector<glm::vec3> diffuseColors;
 	std::vector<glm::vec3> ambientColors;
 	std::vector<glm::vec3> specularColors;
+	std::vector<float> shininesses;
 
 	glm::vec3 vertex;
 	glm::vec2 texture;
@@ -79,7 +83,9 @@ void HeightMapLoader::createVAO()
 			diffuseColors.push_back(color);
 			color = color * 0.1f;
 			ambientColors.push_back(color);
-			specularColors.push_back(specularColor);
+			color = color * 12.f;
+			specularColors.push_back(color);
+			shininesses.push_back(m_pShininess[j * m_width + i + 1]);
 			//normal
 			normal = getNormal(i + 1, j);
 
@@ -97,7 +103,9 @@ void HeightMapLoader::createVAO()
 			diffuseColors.push_back(color);
 			color = color * 0.1f;
 			ambientColors.push_back(color);
-			specularColors.push_back(specularColor);
+			color = color * 12.f;
+			specularColors.push_back(color);
+			shininesses.push_back(m_pShininess[j * m_width + i]);
 			//normal
 			normal = getNormal(i, j);
 
@@ -115,7 +123,9 @@ void HeightMapLoader::createVAO()
 			diffuseColors.push_back(color);
 			color = color * 0.1f;
 			ambientColors.push_back(color);
-			specularColors.push_back(specularColor);
+			color = color * 12.f;
+			specularColors.push_back(color);
+			shininesses.push_back(m_pShininess[(j + 1) * m_width + i + 1]);
 			//normal
 			normal = getNormal(i + 1, j + 1);
 
@@ -133,7 +143,9 @@ void HeightMapLoader::createVAO()
 			diffuseColors.push_back(color);
 			color = color * 0.1f;
 			ambientColors.push_back(color);
-			specularColors.push_back(specularColor);
+			color = color * 12.f;
+			specularColors.push_back(color);
+			shininesses.push_back(m_pShininess[(j + 1) * m_width + i]);
 			//normal
 			normal = getNormal(i, j + 1);
 
@@ -186,6 +198,16 @@ void HeightMapLoader::createVAO()
 	// connect the rgb to the "vertSpecularColor" attribute of the vertex shader
 	glEnableVertexAttribArray(m_pProgram->attrib("vertSpecularColor"));
 	glVertexAttribPointer(m_pProgram->attrib("vertSpecularColor"), 3, GL_FLOAT, GL_TRUE, 0, NULL);
+
+	// create and bind the VBO for specularColors
+	glGenBuffers(1, &m_iTerrainVBO);
+	m_vVBOs.push_back(m_iTerrainVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);
+	glBufferData(GL_ARRAY_BUFFER, shininesses.size() *  sizeof(float), &shininesses.front(), GL_STATIC_DRAW);
+	// connect the rgb to the "vertSpecularColor" attribute of the vertex shader
+	glEnableVertexAttribArray(m_pProgram->attrib("vertShininess"));
+	glVertexAttribPointer(m_pProgram->attrib("vertShininess"), 1, GL_FLOAT, GL_FALSE, 0, NULL);
+
 
 	// create and bind the VBO for normals
 	glGenBuffers(1, &m_iTerrainVBO);
@@ -406,6 +428,7 @@ HeightMapLoader::~HeightMapLoader()
 	delete  m_pHeightValues;
 	delete m_pMoisture;
 	delete[] m_pColors;
+	delete[] m_pShininess;
 	glDeleteBuffers(m_vVBOs.size(), &m_vVBOs.front());
 	std::cout << "heightmap destroyed" << std::endl;
 }
@@ -470,11 +493,6 @@ glm::vec3 HeightMapLoader::getColor(int x, int z) const
 {
 	vec3f tmpColor = m_pColors[z*m_width + x];
 	glm::vec3 retColor(tmpColor.x(), tmpColor.y(), tmpColor.z());
-	//std::array<float, 3> retColor;
-	//for (int i = 0; i < 3; i++)
-	//{
-	//	retColor[i] = tmpColor[i];
-	//}
 	return retColor;
 }
 

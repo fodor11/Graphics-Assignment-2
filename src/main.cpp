@@ -38,8 +38,10 @@ int midX=430, midY=320;
 bool menu = false;
 //for flying around
 float setHeight = 0.f;
-// OGL shader program
-tdogl::Program* glProgram = nullptr;
+// OGL shader programs
+tdogl::Program* phongProgram = nullptr;
+tdogl::Program* unifColorProgram = nullptr;
+std::vector<tdogl::Program*> allShaders;
 
 void drawAxis(float nullX, float nullY, float nullZ)
 {
@@ -125,12 +127,8 @@ void display()
 	//float scale = heightMap->getScale();
 	float maxHeight = heightMap->getMaxHeight();
 
-	//Draw ground
 	heightMap->drawTerrain();
-
-	/////////////////////////////////////////////////
 	environment->update();
-	/////////////////////////////////////////////////
 
 	printFps();
 
@@ -306,24 +304,28 @@ std::string resourcePath(std::string fileName)
 void loadShaders() {
 	std::cout << "Loading shaders ..." << std::endl;
 	std::vector<tdogl::Shader> shaders;
-	shaders.push_back(tdogl::Shader::shaderFromFile(("vertex-shader.txt"), GL_VERTEX_SHADER));
-	shaders.push_back(tdogl::Shader::shaderFromFile(("fragment-shader.txt"), GL_FRAGMENT_SHADER));
-	glProgram = new tdogl::Program(shaders);
+	shaders.push_back(tdogl::Shader::shaderFromFile(("phong.vs"), GL_VERTEX_SHADER));
+	shaders.push_back(tdogl::Shader::shaderFromFile(("phong.fs"), GL_FRAGMENT_SHADER));
+	phongProgram = new tdogl::Program(shaders);
+	allShaders.push_back(phongProgram);
 
+	shaders.clear();
+	shaders.push_back(tdogl::Shader::shaderFromFile(("unifColor-Phong.vs"), GL_VERTEX_SHADER));
+	shaders.push_back(tdogl::Shader::shaderFromFile(("unifColor-Phong.fs"), GL_FRAGMENT_SHADER));
+	unifColorProgram = new tdogl::Program(shaders);
+	allShaders.push_back(unifColorProgram);
 	std::cout << "Done." << endl;
 }
 void loadObjects() {
 	std::cout << "Load objects... " << std::endl;
 	//Loadheightmap
-	heightMap = new HeightMapLoader("terrain6_256.png", glProgram);
+	heightMap = new HeightMapLoader("terrain6_256.png", phongProgram);
 	//init cam, sets the current time
-	camera = new Camera(heightMap, glProgram);
+	camera = new Camera(heightMap, allShaders);
 	camera->setAspectRatio(((float)midX * 2) / ((float)midY * 2));
-	//////////////////////////////////////////////////////////////////////////
 	//set up environment
 	environment = new Environment();
-	environment->initialize(heightMap, camera, glProgram);
-	//////////////////////////////////////////////////////////////////////////
+	environment->initialize(heightMap, camera, unifColorProgram, allShaders);
 }
 void initialize()
 {
@@ -341,7 +343,7 @@ void initialize()
 	//glEnable(GL_BLEND);
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClearColor(1.0, 1.0, 1.0, 0.0);
 
 	glMatrixMode(GL_PROJECTION);
 

@@ -15,16 +15,17 @@ Environment::~Environment()
 	delete m_pSky;
 }
 
-void Environment::initialize(HeightMapLoader* heightMap, Camera* camera, tdogl::Program* shaderProgram)
+void Environment::initialize(HeightMapLoader* heightMap, Camera* camera, tdogl::Program* skyShaderProgram, std::vector<tdogl::Program*>& allShaders)
 {
 	m_pCamera = camera;
 	m_pHeightmap = heightMap;
-	m_pProgram = shaderProgram;
+	m_vAllShaders = allShaders;
+	m_pSkyShader = skyShaderProgram;
 	//m_pFog = new DynamicFog(camera);
 	//m_pRain = new Rain(camera, heightMap);
 
 	m_pSky = new Sky();
-	m_pSky->initialize(m_pProgram);
+	m_pSky->initialize(m_pSkyShader, m_vAllShaders);
 
 	//m_pForest = new Forest(m_sForestFileName);
 	//m_pForest->initialize(m_pHeightmap);

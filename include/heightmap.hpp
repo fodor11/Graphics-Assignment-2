@@ -53,6 +53,7 @@ private:
 	float *m_pMoisture;
 
 	vec3f *m_pColors;
+	float *m_pShininess;
 
 	float m_scale = 1.f;
 	float m_maxHeight = 90 * m_scale;

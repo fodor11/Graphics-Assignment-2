@@ -1,12 +1,12 @@
 #include "../include/camera.hpp"
 #include <gl/glm/gtc/matrix_transform.hpp>
 
-Camera::Camera(HeightMapLoader* heightMap, tdogl::Program* program)
+Camera::Camera(HeightMapLoader* heightMap, std::vector<tdogl::Program*> shaderPrograms)
 {
 #ifndef __linux__
 	QueryPerformanceFrequency(&m_liFrequency);
 #endif
-	m_pProgram = program;
+	m_pPrograms = shaderPrograms;
 	m_pHeightMap = heightMap;
 	m_fCameraX = (heightMap->getImageWidth()*heightMap->getScale()) / 2;
 	m_fCameraZ = (heightMap->getImageHeight()*heightMap->getScale()) / 2;
@@ -18,18 +18,20 @@ void Camera::updateCamera()
 {
 	move();
 
-	//set the "camera" uniform in the vertex shader
-	m_pProgram->use();
-
 	glm::mat4 camera = glm::perspective(glm::radians(m_fFieldOfView), m_fViewportAspectRatio, m_fNearPlane, m_fFarPlane);
 	camera = glm::rotate(camera, m_fHorizonAngleRadian, glm::vec3(1, 0, 0));
 	// camera had to be rotated 90 degrees to match the directions of m_fDirectionX and m_fDirectionZ
 	camera = glm::rotate(camera, (float)(m_fRotationAngleRadian + M_PI_2), glm::vec3(0, 1, 0));
 	camera = glm::translate(camera, glm::vec3(-m_fCameraX, -m_fCameraY, -m_fCameraZ));
 
-	m_pProgram->setUniform("camera", camera);
-	m_pProgram->setUniform("viewPosition", glm::vec3(m_fCameraX, m_fCameraY, m_fCameraZ));
-	m_pProgram->stopUsing();
+	//set the "camera" uniform in the vertex shaders
+	for each (tdogl::Program* shader in m_pPrograms)
+	{
+		shader->use();
+		shader->setUniform("camera", camera);
+		shader->setUniform("viewPosition", glm::vec3(m_fCameraX, m_fCameraY, m_fCameraZ));
+		shader->stopUsing();
+	}
 }
 
 void Camera::setForwardMovement()

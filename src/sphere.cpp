@@ -1,11 +1,12 @@
 #include "../include/sphere.hpp"
 #include <gl\glm\gtc\matrix_transform.hpp>
 
-Sphere::Sphere(float radius, unsigned int longitude, unsigned int latitude)
+Sphere::Sphere(float radius, unsigned int longitude, unsigned int latitude, bool normalDirectsOutwards)
 {
 	m_fRadius = radius;
 	m_iLongitude = longitude;
 	m_iLatitude = latitude;
+	m_bNormalDirectsOutwards = normalDirectsOutwards;
 	createVectors();
 }
 
@@ -40,21 +41,29 @@ void Sphere::createVectors()
 
 	for (int i = 0; i <= m_iLatitude; i++)
 	{
-		float alpha = (float)(i * glm::pi<float>()) / m_iLatitude;
-		vertex[1] = glm::cos(alpha);
-		textureUV[1] = 1 - (i / m_iLatitude);
+		float alpha = i * glm::pi<float>() / m_iLatitude;
+		
 		for (int j = 0; j <= m_iLongitude; j++)
 		{
-			float beta = (float)(j * 2 * glm::pi<float>()) / m_iLongitude;
+			float beta = j * 2 * glm::pi<float>() / m_iLongitude;
 			vertex[0] = glm::sin(alpha) * glm::cos(beta);
+			vertex[1] = glm::cos(alpha);
 			vertex[2] = glm::sin(alpha) * glm::sin(beta);
-
-			m_vNormals.push_back(vertex);
+			
+			if (m_bNormalDirectsOutwards)
+			{
+				m_vNormals.push_back(vertex);
+			}
+			else
+			{
+				m_vNormals.push_back(-vertex);
+			}
 
 			vertex = vertex * m_fRadius;
 			m_vVertices.push_back(vertex);
 
-			textureUV[0] = 1 - (j / m_iLongitude);
+			textureUV[0] = (j / (float)m_iLongitude);
+			textureUV[1] = 1.0f - (i / (float)m_iLatitude);
 			m_vTextureCoords.push_back(textureUV);
 		}
 	}
@@ -66,14 +75,14 @@ void Sphere::createVectors()
 	//  |   \  |
 	//  |    \ |
 	// bot.----bot.+1
-	// bot, bot+1, top;
-	// top, bot+1, top+1
+	// face 1: bot, bot+1, top;
+	// face 2: top, bot+1, top+1
 	for (int i = 0; i < m_iLatitude; i++)
 	{
 		for (int j = 0; j < m_iLongitude; j++)
 		{
 			int top = i * (m_iLongitude + 1) + j;
-			int bottom = top + m_iLongitude;
+			int bottom = top + m_iLongitude + 1;
 			m_vIndices.push_back(glm::ivec3(bottom, bottom + 1, top));
 			m_vIndices.push_back(glm::ivec3(top, bottom + 1, top +1));
 		}

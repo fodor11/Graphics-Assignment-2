@@ -30,8 +30,10 @@ set(SOURCES 	src/main.cpp
 		src/tdogl/Program.h
 		src/tdogl/Shader.cpp
 		src/tdogl/Shader.h
-		src/fragment-shader.txt
-		src/vertex-shader.txt
+		src/phong.fs
+		src/phong.vs
+		src/unifColor-Phong.fs
+		src/unifColor-Phong.vs
 
 		include/model.hpp
 		include/objectLoader.hpp

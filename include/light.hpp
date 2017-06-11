@@ -5,7 +5,7 @@
 class Light {
 public:
 	/// creates light, sets uniforms in shaderprogram
-	Light(tdogl::Program* shaderProgram, glm::vec3 position, glm::vec3 ambientIntensities, glm::vec3 diffuseIntensities, glm::vec3 specularIntensities);
+	Light(std::vector<tdogl::Program*>& allShaders, glm::vec3 position, glm::vec3 ambientIntensities, glm::vec3 diffuseIntensities, glm::vec3 specularIntensities);
 	/// updates position, sets light.position uniform in shaderprogram
 	void updatePosition(glm::vec3 newPosition);
 	/// updates ambient intensities, sets light.ambientIntensities uniform in shaderprogram
@@ -30,6 +30,6 @@ private:
 	glm::vec3 m_vAmbientIntensities;
 	glm::vec3 m_vDiffuseIntensities;
 	glm::vec3 m_vSpecularIntensities;
-	tdogl::Program* m_pProgram;
+	std::vector<tdogl::Program*> m_vAllShaders;
 	void setShaderUniforms();
 };

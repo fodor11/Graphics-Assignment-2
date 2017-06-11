@@ -5,6 +5,10 @@ uniform mat3 normalMatrix;
 uniform vec3 viewPosition;
 uniform sampler2D tex;
 
+uniform vec3 ambientColor;
+uniform vec3 diffuseColor;
+uniform vec3 specularColor;
+
 uniform struct Light
 {
 	vec3 position;
@@ -15,9 +19,6 @@ uniform struct Light
 
 in vec3 fragVert;
 in vec2 fragTexCoord;
-in vec3 fragAmbientColor;
-in vec3 fragDiffuseColor;
-in vec3 fragSpecularColor;
 in vec3 fragNormal;
 
 out vec4 finalColor;
@@ -38,15 +39,15 @@ void main() {
 
 	vec4 textureColor = texture(tex, fragTexCoord);
 
-	vec3 ambientColor = fragAmbientColor * light.ambientIntensities;
+	vec3 ambientColor = ambientColor * light.ambientIntensities;
 
-	vec3 diffuseColor = fragDiffuseColor * light.diffuseIntensities * cosAngle;
+	vec3 diffuseColor = diffuseColor * light.diffuseIntensities * cosAngle;
 
 	vec3 viewDirection = normalize(viewPosition - fragPosition);
 	vec3 reflectDirection = reflect(-surfaceToLight, normal);
 	// 32 is the shininess
 	float specular = pow(max(dot(viewDirection, reflectDirection), 0.0), 32);
-	vec3 specularColor = fragSpecularColor * specular * light.specularIntensities;
+	vec3 specularColor = specularColor * specular * light.specularIntensities;
     
 	finalColor = vec4((ambientColor + diffuseColor + specularColor) * textureColor.rgb, textureColor.a);
 }
