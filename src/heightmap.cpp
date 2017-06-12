@@ -199,7 +199,7 @@ void HeightMapLoader::createVAO()
 	glEnableVertexAttribArray(m_pProgram->attrib("vertSpecularColor"));
 	glVertexAttribPointer(m_pProgram->attrib("vertSpecularColor"), 3, GL_FLOAT, GL_TRUE, 0, NULL);
 
-	// create and bind the VBO for specularColors
+	// create and bind the VBO for shininess
 	glGenBuffers(1, &m_iTerrainVBO);
 	m_vVBOs.push_back(m_iTerrainVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_iTerrainVBO);

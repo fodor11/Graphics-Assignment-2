@@ -166,7 +166,7 @@ void Sky::drawMoon()
 {
 	m_mMoonModel = glm::translate(glm::mat4(), glm::vec3(m_LightPosition[0], m_LightPosition[1], m_LightPosition[2]));
 	m_mMoonModel = glm::rotate(m_mMoonModel, glm::radians<float>(180.f), glm::vec3(0.f, 1.f, 0.f));
-	m_mMoonModel = glm::rotate(m_mMoonModel, glm::radians<float>(30.f), glm::vec3(0.f, 0.f, 1.f));
+	m_mMoonModel = glm::rotate(m_mMoonModel, glm::radians<float>(45.f), glm::vec3(0.f, 0.f, 1.f));
 	m_mMoonModel = glm::rotate(m_mMoonModel, glm::radians<float>(180.f), glm::vec3(1.f, 0.f, 0.f));
 
 	// bind the program (the shaders)

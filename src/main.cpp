@@ -41,6 +41,7 @@ float setHeight = 0.f;
 // OGL shader programs
 tdogl::Program* phongProgram = nullptr;
 tdogl::Program* unifColorProgram = nullptr;
+//tdogl::Program* bumpProgram = nullptr;
 std::vector<tdogl::Program*> allShaders;
 
 void drawAxis(float nullX, float nullY, float nullZ)
@@ -314,6 +315,12 @@ void loadShaders() {
 	shaders.push_back(tdogl::Shader::shaderFromFile(("unifColor-Phong.fs"), GL_FRAGMENT_SHADER));
 	unifColorProgram = new tdogl::Program(shaders);
 	allShaders.push_back(unifColorProgram);
+
+	//shaders.clear();
+	//shaders.push_back(tdogl::Shader::shaderFromFile(("phong.vs"), GL_VERTEX_SHADER));
+	//shaders.push_back(tdogl::Shader::shaderFromFile(("phongBump.fs"), GL_FRAGMENT_SHADER));
+	//bumpProgram = new tdogl::Program(shaders);
+	//allShaders.push_back(bumpProgram);
 	std::cout << "Done." << endl;
 }
 void loadObjects() {
