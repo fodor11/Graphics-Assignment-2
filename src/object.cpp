@@ -63,7 +63,7 @@ void Tree::loadObjectDispList()
 
 				//get values
 				verticesVBO.push_back(vertices[v_index]);
-				textureCoordsVBO.push_back(textureCoords[vt_index]);
+				textureCoordsVBO.push_back(glm::vec2(textureCoords[vt_index].x, 1 - textureCoords[vt_index].y));
 				vertexNormalsVBO.push_back(vertNormals[vn_index]);
 			}
 		}
