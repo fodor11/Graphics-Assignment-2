@@ -127,7 +127,7 @@ void ObjectLoader::countTokens()
 	}
 }
 
-void parse3floats(vec3f& vector, std::string line)
+void parse3floats(glm::vec3& vector, std::string line)
 {
 	string::size_type nextFloat = 2; //jumping the vn/v
 	for (int i = 0; i < 3; i++)
@@ -157,7 +157,7 @@ void parseFace(Face& face, std::string line)
 		}
 	}
 }
-void ObjectLoader::compareBoundingBox(vec3f& vertex)
+void ObjectLoader::compareBoundingBox(glm::vec3& vertex)
 {
 	for (int i = 0; i < 3; i++)
 	{
@@ -177,7 +177,7 @@ void ObjectLoader::readData()
 	m_file.clear();
 	m_file.seekg(0, ios::beg);
 	Face tmpFace;
-	vec3f tmpVector;
+	glm::vec3 tmpVector;
 	float tmpFloatArray[2];
 	
 	std::string current_faceList;
@@ -197,7 +197,7 @@ void ObjectLoader::readData()
 			else if (line.compare(0, 2, "vt") == 0)
 			{
 				parse2floats(tmpFloatArray, line);
-				m_textureCoords.push_back(std::pair<float, float>(tmpFloatArray[0], tmpFloatArray[1]));
+				m_textureCoords.push_back(glm::vec2(tmpFloatArray[0], tmpFloatArray[1]));
 			}
 			else if (line.compare(0, 2, "vn") == 0)
 			{
@@ -216,8 +216,6 @@ void ObjectLoader::readData()
 		}
 	}
 	std::cout << "Parsing done" << endl;
-	std::cout << "bounding box min: " << string(m_boundingBox.getMinVertex()).c_str() << endl;
-	std::cout << "bounding box max: " << string(m_boundingBox.getMaxVertex()).c_str() << endl;
 }
 
 ObjectLoader::ObjectLoader(){}
@@ -234,17 +232,17 @@ void ObjectLoader::loadObjFile(std::string filename)
 	m_file.close();
 }
 
-std::vector<vec3f>  ObjectLoader::getVertices() const
+std::vector<glm::vec3>  ObjectLoader::getVertices() const
 {
 	return m_vertices;
 }
 
-std::vector<vec3f>  ObjectLoader::getVertexNormals() const
+std::vector<glm::vec3>  ObjectLoader::getVertexNormals() const
 {
 	return m_vertexNormals;
 }
 
-std::vector<std::pair<float, float>> ObjectLoader::getTextureCoords() const
+std::vector<glm::vec2> ObjectLoader::getTextureCoords() const
 {
 	return m_textureCoords;
 }
@@ -374,16 +372,16 @@ string Face::printFace()
 
 BoundingBox::BoundingBox()
 {
-	m_min_vertex = vec3f();
-	m_max_vertex = vec3f();
+	m_min_vertex = glm::vec3();
+	m_max_vertex = glm::vec3();
 }
 
-vec3f BoundingBox::getMinVertex() const
+glm::vec3 BoundingBox::getMinVertex() const
 {
 	return m_min_vertex;
 }
 
-vec3f BoundingBox::getMaxVertex() const
+glm::vec3 BoundingBox::getMaxVertex() const
 {
 	return m_max_vertex;
 }

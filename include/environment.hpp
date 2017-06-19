@@ -16,7 +16,7 @@ public:
 	/// empty
 	~Environment();
 	/// reads and prepares objects and textures (sky, forest, trees, terrain)
-	void initialize(HeightMapLoader* heightMap, Camera* camera, tdogl::Program* skyShaderProgram, std::vector<tdogl::Program*>& allShaders);
+	void initialize(HeightMapLoader* heightMap, Camera* camera, tdogl::Program* skyShaderProgram, tdogl::Program* treeShaderProgram, std::vector<tdogl::Program*>& allShaders);
 	/// draws everything
 	void update();
 	/// adds the value to the overall lightness
@@ -30,7 +30,7 @@ private:
 	Rain *m_pRain;
 	Sky *m_pSky;
 	tdogl::Program *m_pSkyShader;
-
+	tdogl::Program *m_pTreeShader;
 	std::vector<tdogl::Program*> m_vAllShaders;
 
 	Tree *m_pTree1;

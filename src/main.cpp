@@ -332,7 +332,7 @@ void loadObjects() {
 	camera->setAspectRatio(((float)midX * 2) / ((float)midY * 2));
 	//set up environment
 	environment = new Environment();
-	environment->initialize(heightMap, camera, unifColorProgram, allShaders);
+	environment->initialize(heightMap, camera, unifColorProgram, unifColorProgram, allShaders);
 }
 void initialize()
 {
@@ -360,6 +360,8 @@ void initialize()
 	glutSetCursor(GLUT_CURSOR_NONE);
 	//disable key repeat GLOBALLY
 	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
+	//gamma correction
+	//glEnable(GL_FRAMEBUFFER_SRGB);
 
 	glEnable(GL_DEPTH_TEST);
 	glClearDepth(1.0);

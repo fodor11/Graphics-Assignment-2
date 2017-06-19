@@ -8,8 +8,8 @@
 #include "model.hpp"
 #include <vector>
 #include <map>
+#include <gl/glm/glm.hpp>
 
-class vec3f; 
 
 class FacePoint
 {
@@ -61,9 +61,9 @@ public:
 	/// initialize members
 	BoundingBox();
 	/// get the minimum values
-	vec3f getMinVertex() const;
+	glm::vec3 getMinVertex() const;
 	/// get the maximum values
-	vec3f getMaxVertex() const;
+	glm::vec3 getMaxVertex() const;
 	/// max x - min x
 	float getXdistance();
 	/// max y - min y
@@ -72,8 +72,8 @@ public:
 	float getZdistance();
 
 private:
-	vec3f m_min_vertex;
-	vec3f m_max_vertex;
+	glm::vec3 m_min_vertex;
+	glm::vec3 m_max_vertex;
 };
 
 class ObjectLoader
@@ -86,11 +86,11 @@ public:
 	/// opens file, counts and parses data, closes file
 	void loadObjFile(std::string filename);
 	/// returns the vertices vector
-	std::vector<vec3f> getVertices() const;
+	std::vector<glm::vec3> getVertices() const;
 	/// returns the vertex normals vector
-	std::vector<vec3f> getVertexNormals() const;
+	std::vector<glm::vec3> getVertexNormals() const;
 	/// returns the vertex texture coordinates vector
-	std::vector<std::pair<float, float>> getTextureCoords() const;
+	std::vector<glm::vec2> getTextureCoords() const;
 	/// returns the map of vectors of faces, and the corresponding texture filenames
 	std::map<std::string, std::vector<Face>> getFaceLists() const;
 	/// returns the bounding box (2 vertices)
@@ -107,9 +107,9 @@ private:
 	std::string getTextureFileName(const std::string& textureAlias) const;
 	int getFaceListIndex(const std::string& textureAlias) const;
 
-	std::vector<vec3f> m_vertices;
-	std::vector<vec3f> m_vertexNormals;
-	std::vector<std::pair<float, float>> m_textureCoords;
+	std::vector<glm::vec3> m_vertices;
+	std::vector<glm::vec3> m_vertexNormals;
+	std::vector<glm::vec2> m_textureCoords;
 	std::map<std::string, std::vector<Face>> m_faceLists;
 
 	/// the lengths of the facelists in order
@@ -125,7 +125,7 @@ private:
 
 	BoundingBox m_boundingBox;
 	/// checks if the vertex has smaller or greater values than the bounding box, and corrects the BB
-	void compareBoundingBox(vec3f& vertex);
+	void compareBoundingBox(glm::vec3& vertex);
 
 	ifstream m_file;
 };

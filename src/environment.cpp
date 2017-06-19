@@ -15,26 +15,27 @@ Environment::~Environment()
 	delete m_pSky;
 }
 
-void Environment::initialize(HeightMapLoader* heightMap, Camera* camera, tdogl::Program* skyShaderProgram, std::vector<tdogl::Program*>& allShaders)
+void Environment::initialize(HeightMapLoader* heightMap, Camera* camera, tdogl::Program* skyShaderProgram, tdogl::Program* treeShaderProgram, std::vector<tdogl::Program*>& allShaders)
 {
 	m_pCamera = camera;
 	m_pHeightmap = heightMap;
 	m_vAllShaders = allShaders;
 	m_pSkyShader = skyShaderProgram;
+	m_pTreeShader = treeShaderProgram;
 	//m_pFog = new DynamicFog(camera);
 	//m_pRain = new Rain(camera, heightMap);
 
 	m_pSky = new Sky();
 	m_pSky->initialize(m_pSkyShader, m_vAllShaders);
 
-	//m_pForest = new Forest(m_sForestFileName);
-	//m_pForest->initialize(m_pHeightmap);
+	m_pForest = new Forest(m_sForestFileName);
+	m_pForest->initialize(m_pHeightmap);
 
-	//m_pCamera->setObstacles(m_pForest->getPositionsMap());
+	m_pCamera->setObstacles(m_pForest->getPositionsMap());
 
-	//m_pTree1 = new Tree(m_sTree1FileName);
-	//m_pTree2 = new Tree(m_sTree2FileName);
-	//m_pTree3 = new Tree(m_sTree3FileName);
+	m_pTree1 = new Tree(m_sTree1FileName, m_pTreeShader);
+	m_pTree2 = new Tree(m_sTree2FileName, m_pTreeShader);
+	m_pTree3 = new Tree(m_sTree3FileName, m_pTreeShader);
 }
 
 void Environment::update()
@@ -47,22 +48,22 @@ void Environment::update()
 
 	m_pSky->updateSky(m_pCamera->getX(), m_pCamera->getY(), m_pCamera->getZ(), m_pCamera->getElapsedTime());
 
-	//std::map<std::string, std::vector<vec3f>>& positions = *m_pForest->getPositionsMap();
-	//std::string tmpTreeId;
-	//vec3f tmpPosition;
-	//for (auto map = positions.begin(); map != positions.end(); map++)
-	//{
-	//	tmpTreeId = map->first;
-	//	std::vector<vec3f>& actualPositions = map->second;
-	//	for (int j = 0; j < actualPositions.size(); j++)
-	//	{
-	//		tmpPosition = actualPositions[j];
-	//		glPushMatrix();
-	//		glTranslatef(tmpPosition[0], tmpPosition[1], tmpPosition[2]);
-	//		drawTree(determineTree(tmpTreeId), calcDistanceToCamera(tmpPosition));
-	//		glPopMatrix();
-	//	}
-	//}
+	std::map<std::string, std::vector<vec3f>>& positions = *m_pForest->getPositionsMap();
+	std::string tmpTreeId;
+	vec3f tmpPosition;
+	Tree* tmpTree = nullptr;
+	for (auto map = positions.begin(); map != positions.end(); map++)
+	{
+		tmpTreeId = map->first;
+		std::vector<vec3f>& actualPositions = map->second;
+		for (int j = 0; j < actualPositions.size(); j++)
+		{
+			tmpPosition = actualPositions[j];
+			tmpTree = determineTree(tmpTreeId);
+			tmpTree->translate(glm::vec3(tmpPosition[0], tmpPosition[1], tmpPosition[2]));
+			drawTree(tmpTree, calcDistanceToCamera(tmpPosition));
+		}
+	}
 }
 
 void Environment::changeAmbientLight(float value)
