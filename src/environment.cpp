@@ -40,8 +40,6 @@ void Environment::initialize(HeightMapLoader* heightMap, Camera* camera, tdogl::
 
 void Environment::update()
 {
-	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, m_vLightModelAmbient);
-
 	//m_pFog->updateFog();
 
 	//m_pRain->update();

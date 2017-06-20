@@ -22,7 +22,7 @@ void Tree::getHeight(BoundingBox& boundingBox)
 		m_height = boundingBox.getZdistance();
 	}
 }
-void Tree::loadObjectDispList()
+void Tree::loadObjectVAOs()
 {
 	ObjectLoader* objLoader = new ObjectLoader();
 	objLoader->loadObjFile(m_fileName + ".obj");
@@ -105,51 +105,82 @@ void Tree::loadObjectDispList()
 	objLoader->~ObjectLoader();
 }
 
-void Tree::loadBillBoardDispList()
+void Tree::loadBillBoardVAO()
 {
 	loadTexture(m_fileName + ".png");
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec3> normals;
+	std::vector<glm::vec2> textureCoords;
+
 	float height = m_height * m_scale;
+	float halfWidth = height * 0.5f;
 
-	m_billBoardDispList = glGenLists(1);
-	glNewList(m_billBoardDispList, GL_COMPILE);
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, m_textures.back());
-
-	GLfloat specular[] = { 0.f, 0.f, 0.f, 1.0f };
-	GLfloat ambient[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-	GLfloat diffuse[] = { 0.13f, 0.13f, 0.13f, 1.0f };
-	glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-
-	//glDepthMask(GL_FALSE);
-	glTranslatef(- height / 2, 0.f, 0.f);	//to put the middle of the picture to the right place
-	for (int i = 0; i < 2; i++)
+	//first square
+	vertices.push_back(glm::vec3(-halfWidth, 0, 0));		//1
+	textureCoords.push_back(glm::vec2(0, 1));
+	vertices.push_back(glm::vec3(halfWidth, 0, 0));			//2
+	textureCoords.push_back(glm::vec2(1, 1));
+	vertices.push_back(glm::vec3(-halfWidth, height, 0));	//3
+	textureCoords.push_back(glm::vec2(0, 0));
+	vertices.push_back(glm::vec3(-halfWidth, height, 0));	//3
+	textureCoords.push_back(glm::vec2(0, 0));
+	vertices.push_back(glm::vec3(halfWidth, 0, 0));			//2
+	textureCoords.push_back(glm::vec2(1, 1));
+	vertices.push_back(glm::vec3(halfWidth, height, 0));	//4
+	textureCoords.push_back(glm::vec2(1, 0));
+	for (int i = 0; i < 6; i++)
 	{
-		glTranslatef(height / 2, 0.f, 0.f);
-		glRotatef(90.f * i, 0.f, 1.f, 0.f);
-		glTranslatef(- height / 2, 0.f, 0.f);
-		glBegin(GL_TRIANGLE_STRIP);
-
-		glTexCoord2f(0.f, 1.f);
-		glVertex3f(0.f, 0.f, 0.f);
-
-		glTexCoord2f(1.f, 1.f);
-		glVertex3f(height, 0.f, 0.f);
-
-		glTexCoord2f(0.f, 0.f);
-		glVertex3f(0.f, height, 0.f);
-
-		glTexCoord2f(1.f, 0.f);
-		glVertex3f(height, height, 0.f);
-
-		glEnd();
+		normals.push_back(glm::vec3(0, 0, 1));
 	}
-	//glDepthMask(GL_TRUE);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-	glEndList();
+
+	//second square
+	vertices.push_back(glm::vec3(0, 0, halfWidth));			//1
+	textureCoords.push_back(glm::vec2(0, 1));
+	vertices.push_back(glm::vec3(0, 0, -halfWidth));		//2
+	textureCoords.push_back(glm::vec2(1, 1));
+	vertices.push_back(glm::vec3(0, height, halfWidth));	//3
+	textureCoords.push_back(glm::vec2(0, 0));
+	vertices.push_back(glm::vec3(0, height, halfWidth));	//3
+	textureCoords.push_back(glm::vec2(0, 0));
+	vertices.push_back(glm::vec3(0, 0, -halfWidth));		//2
+	textureCoords.push_back(glm::vec2(1, 1));
+	vertices.push_back(glm::vec3(0, height, -halfWidth));	//4
+	textureCoords.push_back(glm::vec2(1, 0));
+	for (int i = 0; i < 6; i++)
+	{
+		normals.push_back(glm::vec3(1, 0, 0));
+	}
+	glGenVertexArrays(1, &m_uiBillBoardVAO);
+	glBindVertexArray(m_uiBillBoardVAO);
+
+	// create and bind the VBO for vertices
+	glGenBuffers(1, &m_iTreeVBO);
+	m_vVBOs.push_back(m_iTreeVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_iTreeVBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices.front(), GL_STATIC_DRAW);
+	// connect the xyz to the "vert" attribute of the vertex shader
+	glEnableVertexAttribArray(m_pProgram->attrib("vert"));
+	glVertexAttribPointer(m_pProgram->attrib("vert"), 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	// create and bind the VBO for texture coordinates
+	glGenBuffers(1, &m_iTreeVBO);
+	m_vVBOs.push_back(m_iTreeVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_iTreeVBO);
+	glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(glm::vec2), &textureCoords.front(), GL_STATIC_DRAW);
+	// connect the uv coords to the "vertTexCoord" attribute of the vertex shader
+	glEnableVertexAttribArray(m_pProgram->attrib("vertTexCoord"));
+	glVertexAttribPointer(m_pProgram->attrib("vertTexCoord"), 2, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	// create and bind the VBO for normals
+	glGenBuffers(1, &m_iTreeVBO);
+	m_vVBOs.push_back(m_iTreeVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_iTreeVBO);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals.front(), GL_STATIC_DRAW);
+	// connect the normal to the "vertNorm" attribute of the vertex shader
+	glEnableVertexAttribArray(m_pProgram->attrib("vertNorm"));
+	glVertexAttribPointer(m_pProgram->attrib("vertNorm"), 3, GL_FLOAT, GL_TRUE, 0, NULL);
+
+	glBindVertexArray(0);
 }
 
 
@@ -157,8 +188,8 @@ Tree::Tree(string fileName, tdogl::Program* shaderProgram)
 {
 	m_fileName = fileName;
 	m_pProgram = shaderProgram;
-	loadObjectDispList();
-	loadBillBoardDispList();
+	loadObjectVAOs();
+	loadBillBoardVAO();
 }
 
 Tree::~Tree()
@@ -206,6 +237,38 @@ void Tree::drawTree()
 
 void Tree::drawBillBoard()
 {
+	glm::vec3 specular = glm::vec3( 0.f, 0.f, 0.f);
+	glm::vec3 ambient = glm::vec3( 0.1f, 0.1f, 0.1f);
+	glm::vec3 diffuse = glm::vec3( 0.13f, 0.13f, 0.13f);
+
+	// bind the program (the shaders)
+	m_pProgram->use();
+
+	// set the "model" uniform in the vertex shader
+	glm::mat4 tmpModel = glm::translate(glm::mat4(), m_vTranslationVector);
+	m_pProgram->setUniform("model", tmpModel);
+
+	// set colors
+	m_pProgram->setUniform("ambientColor", ambient);
+	m_pProgram->setUniform("diffuseColor", diffuse);
+	m_pProgram->setUniform("specularColor", specular);
+
+	// set the "normalMatrix" uniform in the vertex shader
+	m_pProgram->setUniform("normalMatrix", glm::mat3(glm::transpose(glm::inverse(tmpModel))));
+
+	// bind the texture and set the "tex" uniform in the fragment shader
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_textures.back());
+	m_pProgram->setUniform("tex", 0); //set to 0 because the texture is bound to GL_TEXTURE0
+
+									  // bind the VAO 
+	glBindVertexArray(m_uiBillBoardVAO);
+
+	glDrawArrays(GL_TRIANGLES, 0, 12); // 2 squares made up of 6-6 vertices
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	m_pProgram->stopUsing();
+
 }
 
 void Tree::translate(glm::vec3 vector)

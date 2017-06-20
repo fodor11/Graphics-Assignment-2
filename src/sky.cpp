@@ -34,7 +34,10 @@ void Sky::initialize(tdogl::Program *skyShaderProgram, std::vector<tdogl::Progra
 
 void Sky::updateSky(float cameraX, float cameraY, float cameraZ, float elapsedTime)
 {
-	moveMoon(elapsedTime);
+	if (m_bMoonlight)
+	{
+		moveMoon(elapsedTime);
+	}
 	drawMoon();
 	m_mSkyModel = glm::translate(glm::mat4(), glm::vec3(cameraX, cameraY, cameraZ));
 	drawSky();

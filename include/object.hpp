@@ -37,8 +37,8 @@ private:
 	std::vector<GLuint> m_textures;
 	GLuint loadTexture(string fileNames);
 
-	void loadObjectDispList();
+	void loadObjectVAOs();
 
-	GLuint m_billBoardDispList;
-	void loadBillBoardDispList();
+	GLuint m_uiBillBoardVAO;
+	void loadBillBoardVAO();
 };

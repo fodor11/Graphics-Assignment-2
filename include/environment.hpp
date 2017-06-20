@@ -19,11 +19,11 @@ public:
 	void initialize(HeightMapLoader* heightMap, Camera* camera, tdogl::Program* skyShaderProgram, tdogl::Program* treeShaderProgram, std::vector<tdogl::Program*>& allShaders);
 	/// draws everything
 	void update();
-	/// adds the value to the overall lightness
+	/// TODO: adds the value to the overall lightness
 	void changeAmbientLight(float value);
-	/// toggles moonlight on and off
+	/// TODO: toggles moonlight on and off
 	void toggleMoonlight();
-	/// toggles fog on and off
+	/// TODO: toggles fog on and off
 	void toggleFog();
 private:
 	DynamicFog *m_pFog;

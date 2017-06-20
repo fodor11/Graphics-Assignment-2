@@ -237,10 +237,10 @@ void keyboard(unsigned char key, int x, int y)
 	//case 'f':
 	//	environment->toggleFog();
 	//	break;
-	//case 'm':
-	//	environment->toggleMoonlight();
-	//	break;
 	////////////////////////////////////////////////////
+	case 'm':
+		environment->toggleMoonlight();
+		break;
 	case 27:
 		cleanUp();
 		exit(0);
@@ -338,12 +338,6 @@ void initialize()
 {
 	cout << "Init ..." << endl;
 	
-	//glEnable(GL_TEXTURE_2D);
-
-	//glShadeModel(GL_SMOOTH);
-	//glEnable(GL_NORMALIZE);
-	//glEnable(GL_AUTO_NORMAL);
-
 	//Alpha functions
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.5f);
