@@ -43,6 +43,8 @@ tdogl::Program* phongProgram = nullptr;
 tdogl::Program* unifColorProgram = nullptr;
 //tdogl::Program* bumpProgram = nullptr;
 std::vector<tdogl::Program*> allShaders;
+//gamma correction
+bool gamma = false;
 
 void drawAxis(float nullX, float nullY, float nullZ)
 {
@@ -224,6 +226,18 @@ void keyboard(unsigned char key, int x, int y)
 		break;
 	case 'x':
 		camera->setDownwardMovement();
+		break;
+	case 'g':
+		if (gamma)
+		{
+			glDisable(GL_FRAMEBUFFER_SRGB);
+			gamma = false;
+		}
+		else
+		{
+			glEnable(GL_FRAMEBUFFER_SRGB);
+			gamma = true;
+		}
 		break;
 	////////////////////////////////////////////////////
 	//case 43:
